@@ -5,8 +5,8 @@ from constants import seed
 
 
 class ApplicationSubmissionQueue(Queue):
-    def __init__(self, name, output_unit, lambda_parameter, policy):
-        super().__init__(name, output_unit, policy)
+    def __init__(self, lambda_parameter):
+        super().__init__("ApplicationSubmissionQueue", 1, "SPT")
         self.lambda_parameter = lambda_parameter
         self.random_generator = Random()
         self.random_generator.seed(seed)

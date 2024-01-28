@@ -7,8 +7,8 @@ from constants import seed
 
 
 class WritingQueue(Queue):
-    def __init__(self, name, entry_mean, entry_variance, output_unit, policy):
-        super().__init__(name, output_unit, policy)
+    def __init__(self, entry_mean, entry_variance):
+        super().__init__("WritingQueue", 1, "SPT")
         self.entry_mean = entry_mean
         self.entry_variance = entry_variance
         self.random_generator = Random()

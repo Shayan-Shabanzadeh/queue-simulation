@@ -1,10 +1,13 @@
 import matplotlib.pyplot as plt
 
+from ApplicationSubmissionQueue import ApplicationSubmissionQueue
 from ComplaintsQueue import ComplaintsQueue
+from DocumentVerificationQueue import DocumentVerificationQueue
 from ReviewRequestQueue import ReviewRequestQueue
+from WritingQueue import WritingQueue
 
 
-def simulate_queues(queue_instances, simulation_time):
+def simulate_and_plot_queues(queue_instances, simulation_time):
     all_tasks = []
 
     for queue_instance in queue_instances:
@@ -18,10 +21,10 @@ def simulate_queues(queue_instances, simulation_time):
 
         all_tasks.append((queue_instance.name, task_times))
 
-    return all_tasks
+    plot_interarrival_tasks(all_tasks)
 
 
-def plot_tasks(all_tasks):
+def plot_interarrival_tasks(all_tasks):
     plt.figure(figsize=(12, 8))
 
     for queue_name, task_times in all_tasks:
@@ -40,11 +43,12 @@ if __name__ == "__main__":
     # number_of_cores = int(input("Enter number of cores for each type :"))
     simulation_time = float(input("Enter the simulation time in seconds: "))
 
-    review_queue = ReviewRequestQueue(name="ReviewQueue", entry_mean=40, entry_variance=36, output_unit=1,
-                                      policy="FIFO")
-    complaints_queue = ComplaintsQueue(name="ComplaintsQueue", output_unit=1, lambda_parameter=0.5, policy="FIFO")
-
-    all_queues = [review_queue, complaints_queue]
-    all_tasks = simulate_queues(all_queues, simulation_time)
-
-    plot_tasks(all_tasks)
+    writing_queue = WritingQueue(entry_mean=40, entry_variance=36)
+    complaints_queue = ComplaintsQueue(lambda_parameter=0.5)
+    document_verification_queue = DocumentVerificationQueue(alpha=1, beta=2)
+    application_submission_queue = ApplicationSubmissionQueue(lambda_parameter=0.06)
+    review_queue = ReviewRequestQueue(entry_mean=15, entry_variance=36)
+    # all_queues = [complaints_queue ,application_submission_queue]
+    all_queues = [writing_queue, complaints_queue, document_verification_queue, application_submission_queue,
+                  review_queue]
+    simulate_and_plot_queues(all_queues, simulation_time)
