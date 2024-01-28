@@ -1,6 +1,9 @@
+from random import Random
+
+import numpy as np
+
 from Queue import Queue
-from RandomGenerator import RandomLCGGenerator, RandomVariateGenerator
-from constants import seed, a, c, m
+from constants import seed
 
 
 class WritingQueue(Queue):
@@ -8,17 +11,17 @@ class WritingQueue(Queue):
         super().__init__(name, output_unit, policy)
         self.entry_mean = entry_mean
         self.entry_variance = entry_variance
-        self.random_generator = RandomLCGGenerator(seed=seed, a=a, m=m, c=c)
+        self.random_generator = Random()
+        self.random_generator.seed(seed)
 
     def generate_interarrival_time(self):
-        u1 = self.random_generator.generate()
-        u2 = self.random_generator.generate()
+        random_number = self.random_generator.normalvariate(self.entry_mean, np.sqrt(self.entry_variance))
 
-        random_number = RandomVariateGenerator.randomBoxMullerGenerator(u1=u1, u2=u2, mean=self.entry_mean,
-                                                                        variance=self.entry_variance)
         # To be sure that interarrival time is positive
-        interarrival_time = max(0, random_number)
-        return interarrival_time * self.output_unit
+        if random_number > 0:
+            return random_number * self.output_unit
+        else:
+            return 0
 
     def process_tasks(self):
         # Implement processing logic for this specific queue type

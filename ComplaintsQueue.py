@@ -1,23 +1,24 @@
+from random import Random
+
 from Queue import Queue
-from RandomGenerator import RandomLCGGenerator, RandomVariateGenerator
-from constants import seed, a, c, m
+from constants import seed
 
 
 class ComplaintsQueue(Queue):
     def __init__(self, name, output_unit, lambda_parameter, policy):
         super().__init__(name, output_unit, policy)
         self.lambda_parameter = lambda_parameter
-        self.random_generator = RandomLCGGenerator(seed=seed, a=a, m=m, c=c)
+        self.random_generator = Random()
+        self.random_generator.seed(seed)
 
     def generate_interarrival_time(self):
-        u = self.random_generator.generate()
-
-        interarrival_time = RandomVariateGenerator.randomExpVariateGenerator(u=u,
-                                                                             lambda_parameter=self.lambda_parameter)
+        random_number = self.random_generator.expovariate(lambd=self.lambda_parameter)
 
         # To be sure that interarrival time is positive
-        interarrival_time = max(0, interarrival_time)
-        return interarrival_time * self.output_unit
+        if random_number > 0:
+            return random_number * self.output_unit
+        else:
+            return 0
 
     def process_tasks(self):
         # Implement processing logic for this specific queue type
