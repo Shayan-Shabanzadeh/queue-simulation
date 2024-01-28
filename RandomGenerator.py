@@ -1,4 +1,8 @@
+from random import Random
+
 import numpy as np
+
+from constants import seed as s
 
 
 class RandomLCGGenerator:
@@ -26,3 +30,10 @@ class RandomVariateGenerator:
     @staticmethod
     def randomExpVariateGenerator(u, lambda_parameter):
         return -np.log(1 - u) / lambda_parameter
+
+    @staticmethod
+    def randomGammaGenerator(alpha, beta):
+        # User a uniform pseudo random number
+        rnd = Random()
+        rnd.seed(s)
+        return rnd.gammavariate(alpha=alpha, beta=beta)
