@@ -1,16 +1,5 @@
-# This is a sample Python script.
+if __name__ == "__main__":
+    # LCG parameters are set in constants.py ./constants.py
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    number_of_cores = int(input("Enter number of cores for each type :"))
+    simulation_time = float(input("Enter the simulation time in seconds: "))
