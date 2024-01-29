@@ -51,7 +51,6 @@ class Core(ABC):
         return processing_thread
 
     def stop_processing_thread(self):
-        print("HELLOOOO")
         self.stop_thread = True
 
     def fetch_task(self) -> Task:
@@ -68,37 +67,51 @@ class Core(ABC):
         switch_time += self.switch_time_period
         while not self.stop_thread:
             current_task = self.fetch_task()
+            if current_task and current_task.arrival_time > total_elapsed_time:
+                if current_task.arrival_time < switch_time:
+                    idle_time = current_task.arrival_time - total_elapsed_time
+                else:
+                    idle_time = switch_time - total_elapsed_time
+                    switch_time += self.switch_time_period
+                    self.switch_queue()
+                logging.info(
+                    f"{self.name} (ID: {self.id}) is idle for {idle_time} ms")
+                # time.sleep(idle_time)
+                total_elapsed_time += idle_time
 
-            if current_task:
+            elif current_task and current_task.arrival_time <= total_elapsed_time:
                 # Get the lock for the current queue or use a default lock
                 lock = self.queue_locks.get(self.current_queue, Lock())
 
                 with lock:
                     if current_task.service_time <= switch_time - total_elapsed_time:
-                        # Simulate running the entire task
+                        # Task is eligible for processing
+                        current_task.start_execution_time = total_elapsed_time
                         run_time = current_task.service_time
                         total_elapsed_time += run_time
+                        time.sleep(run_time)  # Simulating processing time
+                        current_task.end_execution_time = total_elapsed_time
+                        current_task.time_in_the_queue = current_task.start_execution_time - current_task.arrival_time
                         logging.info(
                             f"{self.name} (ID: {self.id})"
-                            f"Processing task {current_task.id} with service time: {current_task.service_time} "
-                            f"and interarrival_time: {current_task.interarrival_time} for {run_time} ms")
-                        time.sleep(run_time)  # Simulating processing time
-
+                            f"Processing task {current_task} for {run_time} ms")
+                        self.current_queue.remove_task(current_task)
                         self.current_task = None
                     else:
-                        # Simulate running the task for the remaining time before switch
+                        current_task.start_execution_time = total_elapsed_time
                         run_time = (switch_time - total_elapsed_time)
                         total_elapsed_time += run_time
 
-                        logging.info(
-                            f"{self.name} (ID: {self.id})"
-                            f"Processing task {current_task.id} with service time: {current_task.service_time} "
-                            f"and interarrival_time: {current_task.interarrival_time} for {run_time} ms")
                         time.sleep(run_time)  # Simulating processing time
+                        current_task.time_in_the_queue = current_task.start_execution_time - current_task.arrival_time
 
                         current_task.service_time -= run_time
+                        logging.info(
+                            f"{self.name} (ID: {self.id})"
+                            f"Processing task {current_task} for {run_time} ms")
                         # Move the task to the end of the queue
                         if self.current_queue:
+                            self.current_queue.remove_task(self.current_task)
                             self.current_queue.add_task(current_task)
 
                         self.current_task = None
