@@ -1,18 +1,49 @@
+import logging
 import time
+import uuid
 from abc import ABC, abstractmethod
-from threading import Thread
+from random import Random
+from threading import Thread, Lock
 
 from Task import Task
 
+# Set up the logging format with color and an empty line
+logging.basicConfig(format='\033[92m%(message)s\033[0m\n', level=logging.INFO)
+
+
+class ColoredFormatter(logging.Formatter):
+    COLORS = {
+        'ERROR': '\033[91m',  # Red
+        'WARNING': '\033[93m',  # Yellow
+        'INFO': '\033[92m',  # Green
+        'DEBUG': '\033[94m',  # Blue
+        'CRITICAL': '\033[95m',  # Magenta
+    }
+
+    def format(self, record):
+        log_message = super().format(record)
+        return f"{self.COLORS.get(record.levelname, '')}{log_message}\033[0m"
+
+
+# Add an additional handler with color to the root logger
+colored_console_handler = logging.StreamHandler()
+colored_console_handler.setFormatter(ColoredFormatter())
+logging.getLogger('').addHandler(colored_console_handler)
+
 
 class Core(ABC):
-    def __init__(self, name, switch_time_period, queue_lock):
-        self.name = name
-        self.switch_time_period = switch_time_period
+    def __init__(self, queues):
+        self.id = uuid.uuid1()
+        self.name = "Abstract core "
+        self.switch_time_period = 0
         self.current_queue = None
+        self.queues = queues
         self.current_task = None
-        self.queue_lock = queue_lock  # Add a lock for queue synchronization
+        self.queue_locks = {queue: Lock() for queue in queues}  # Create a lock for each queue
         self.stop_thread = False  # Flag to signal the thread to stop
+        self.random_generator = Random()
+        from constants import seed
+        self.random_generator.seed(seed)
 
     def start_processing_thread(self):
         processing_thread = Thread(target=self._process_task)
@@ -20,10 +51,11 @@ class Core(ABC):
         return processing_thread
 
     def stop_processing_thread(self):
+        print("HELLOOOO")
         self.stop_thread = True
 
     def fetch_task(self) -> Task:
-        with self.queue_lock:  # Acquire the lock before accessing the queue
+        with self.queue_locks[self.current_queue]:  # Acquire the lock for the current queue
             if self.current_queue:
                 if not self.current_task:
                     return self.current_queue.fetch_task()
@@ -33,48 +65,41 @@ class Core(ABC):
     def _process_task(self):
         total_elapsed_time = 0
         switch_time = 0
-        switch_time += total_elapsed_time
+        switch_time += self.switch_time_period
         while not self.stop_thread:
             current_task = self.fetch_task()
 
             if current_task:
-                with self.queue_lock:  # Acquire the lock before modifying the queue
-                    if current_task.service_time <= switch_time - total_elapsed_time:
-                        # Release the lock before simulating processing time
-                        self.queue_lock.release()
+                # Get the lock for the current queue or use a default lock
+                lock = self.queue_locks.get(self.current_queue, Lock())
 
+                with lock:
+                    if current_task.service_time <= switch_time - total_elapsed_time:
                         # Simulate running the entire task
                         run_time = current_task.service_time
                         total_elapsed_time += run_time
+                        logging.info(
+                            f"{self.name} (ID: {self.id})"
+                            f"Processing task {current_task.id} with service time: {current_task.service_time} "
+                            f"and interarrival_time: {current_task.interarrival_time} for {run_time} ms")
                         time.sleep(run_time)  # Simulating processing time
-
-                        current_task.service_time = 0  # Task is completed
-
-                        # Re-acquire the lock to modify the queue
-                        self.queue_lock.acquire()
-                        # Remove the task if completed
-                        self.current_queue.remove_task(current_task)
-                        self.queue_lock.release()
 
                         self.current_task = None
                     else:
-                        # Release the lock before simulating processing time
-                        self.queue_lock.release()
-
                         # Simulate running the task for the remaining time before switch
                         run_time = (switch_time - total_elapsed_time)
                         total_elapsed_time += run_time
 
+                        logging.info(
+                            f"{self.name} (ID: {self.id})"
+                            f"Processing task {current_task.id} with service time: {current_task.service_time} "
+                            f"and interarrival_time: {current_task.interarrival_time} for {run_time} ms")
                         time.sleep(run_time)  # Simulating processing time
-
-                        # Re-acquire the lock to modify the queue
-                        self.queue_lock.acquire()
 
                         current_task.service_time -= run_time
                         # Move the task to the end of the queue
-                        self.current_queue.remove_task(current_task)
-                        self.current_queue.add_task(current_task)
-                        self.queue_lock.release()
+                        if self.current_queue:
+                            self.current_queue.add_task(current_task)
 
                         self.current_task = None
 
