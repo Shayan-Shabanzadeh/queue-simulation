@@ -6,7 +6,7 @@ from constants import seed
 
 class DocumentVerificationQueue(Queue):
     def __init__(self, alpha, beta):
-        super().__init__("ReviewQueue", 60, "FIFO")
+        super().__init__("ReviewQueue", 60, "FIFO" , 10)
         self.alpha = alpha
         self.beta = beta
         self.random_generator = Random()
