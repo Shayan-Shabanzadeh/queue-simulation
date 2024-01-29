@@ -11,8 +11,8 @@ class ReviewRequestQueue(Queue):
         super().__init__("ReviewRequestQueue", 1, "SIRO", 10)
         self.entry_mean = entry_mean
         self.entry_variance = entry_variance
-        self.random_generator = Random()
-        self.random_generator.seed(seed)
+        self.random_task_fetcher = Random()
+        self.random_task_fetcher.seed(seed)
 
     def generate_interarrival_time(self):
         random_number = self.random_generator.normalvariate(self.entry_mean, np.sqrt(self.entry_variance))
@@ -23,6 +23,13 @@ class ReviewRequestQueue(Queue):
         else:
             return 0
 
-    def process_tasks(self):
-        # Implement processing logic for this specific queue type
-        pass
+    def fetch_task(self):
+        if not self.tasks:
+            return None  # No task in the queue
+
+        # Fetch a task randomly from the queue (SIRO)
+        random_index = self.random_task_fetcher.randint(0, len(self.tasks))
+        task = self.tasks.pop(random_index)
+
+        return task
+
