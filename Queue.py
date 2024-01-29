@@ -1,7 +1,8 @@
 from random import Random
 
+from matplotlib import pyplot as plt
+
 from Task import Task
-from constants import seed
 
 
 class Queue:
@@ -12,6 +13,7 @@ class Queue:
         self.tasks = []
         self.service_mean = service_mean
         self.random_generator = Random()
+        from constants import seed
         self.random_generator.seed(seed)
 
     def generate_interarrival_time(self):
@@ -24,12 +26,42 @@ class Queue:
         interarrival_time = self.generate_interarrival_time()
         service_time = self.generate_service_time()
         task = Task(interarrival_time=interarrival_time, service_time=service_time)
+        return task
+
+    def generate_tasks(self, simulation_time):
+        task_times = []
+        task_arrival_time = 0
+        while sum(task_times) < simulation_time:
+            task = self.generate_task()
+            task_arrival_time += task.interarrival_time
+            task.arrival_time = task_arrival_time
+            task_times.append(task.interarrival_time)
+            self.tasks.append(task)
+
+    def remove_task(self, task: Task):
+        if task in self.tasks:
+            self.tasks.remove(task)
+        else:
+            print(f"Task {task} not found in the queue {self.name}")
+
+    def add_task(self, task: Task):
         self.tasks.append(task)
 
-    def fetch_task(self):
-        raise NotImplementedError("Subclasses must implement this method.")
+    def generate_plot_interarrival_tasks(self, plot=None):
+        if plot is None:
+            plot = plt
 
-    def generate_task(self, task_number):
-        interarrival_time = self.generate_interarrival_time()
-        task = {"TaskNumber": task_number, "InterarrivalTime": interarrival_time}
-        self.tasks.append(task)
+        plot.figure(figsize=(12, 8))
+
+        interarrival_times = [task.interarrival_time for task in self.tasks]
+
+        plot.hist(interarrival_times, bins=30, alpha=0.5, label=self.name)
+        plot.title("Distribution of Interarrival Times for " + self.name)
+        plot.xlabel("Interarrival Time (minutes)")
+        plot.ylabel("Frequency")
+        plot.legend()
+        plot.show()
+
+
+def fetch_task(self):
+    raise NotImplementedError("Subclasses must implement this method.")

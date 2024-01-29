@@ -2,9 +2,9 @@ from Queue import Queue
 
 
 class ComplaintsQueue(Queue):
-    def __init__(self, lambda_parameter):
+    def __init__(self):
         super().__init__("ComplaintsQueue", 60, "FIFO", 25)
-        self.lambda_parameter = lambda_parameter
+        self.lambda_parameter = 0.5
 
     def generate_interarrival_time(self):
         random_number = self.random_generator.expovariate(lambd=self.lambda_parameter)
@@ -15,6 +15,13 @@ class ComplaintsQueue(Queue):
         else:
             return 0
 
-    def process_tasks(self):
-        # Implement processing logic for this specific queue type
-        pass
+    def fetch_task(self):
+        if not self.tasks:
+            return None  # No task in the queue
+
+        # Fetch the task at the front of the queue (FIFO)
+        task = self.tasks[0]
+
+        return task
+
+

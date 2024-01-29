@@ -2,9 +2,9 @@ from Queue import Queue
 
 
 class ApplicationSubmissionQueue(Queue):
-    def __init__(self, lambda_parameter):
-        super().__init__("ApplicationSubmissionQueue", 1, "SPT" , 5)
-        self.lambda_parameter = lambda_parameter
+    def __init__(self):
+        super().__init__("ApplicationSubmissionQueue", 1, "SPT", 5)
+        self.lambda_parameter = 0.06
 
     def generate_interarrival_time(self):
         random_number = self.random_generator.expovariate(lambd=self.lambda_parameter)
@@ -15,6 +15,11 @@ class ApplicationSubmissionQueue(Queue):
         else:
             return 0
 
-    def process_tasks(self):
-        # Implement processing logic for this specific queue type
-        pass
+    def fetch_task(self):
+        if not self.tasks:
+            return None  # No task in the queue
+
+        # Find the task with the shortest processing time
+        shortest_task = min(self.tasks, key=lambda task: task.service_time)
+
+        return shortest_task

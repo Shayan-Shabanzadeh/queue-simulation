@@ -1,16 +1,11 @@
-from random import Random
-
 from Queue import Queue
-from constants import seed
 
 
 class DocumentVerificationQueue(Queue):
-    def __init__(self, alpha, beta):
-        super().__init__("ReviewQueue", 60, "FIFO" , 10)
-        self.alpha = alpha
-        self.beta = beta
-        self.random_generator = Random()
-        self.random_generator.seed(seed)
+    def __init__(self):
+        super().__init__("DocumentVerificationQueue", 60, "FIFO", 10)
+        self.alpha = 1
+        self.beta = 2
 
     def generate_interarrival_time(self):
         # Use RandomVariateGenerator to generate gamma-distributed random number
@@ -22,6 +17,12 @@ class DocumentVerificationQueue(Queue):
         else:
             return 0
 
-    def process_tasks(self):
-        # Implement processing logic for this specific queue type
-        pass
+    def fetch_task(self):
+        if not self.tasks:
+            return None  # No task in the queue
+
+        # Fetch the task at the front of the queue (FIFO)
+        task = self.tasks[0]
+
+        return task
+
