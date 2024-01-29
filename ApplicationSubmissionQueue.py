@@ -1,15 +1,10 @@
-from random import Random
-
 from Queue import Queue
-from constants import seed
 
 
 class ApplicationSubmissionQueue(Queue):
     def __init__(self, lambda_parameter):
-        super().__init__("ApplicationSubmissionQueue", 1, "SPT")
+        super().__init__("ApplicationSubmissionQueue", 1, "SPT" , 5)
         self.lambda_parameter = lambda_parameter
-        self.random_generator = Random()
-        self.random_generator.seed(seed)
 
     def generate_interarrival_time(self):
         random_number = self.random_generator.expovariate(lambd=self.lambda_parameter)

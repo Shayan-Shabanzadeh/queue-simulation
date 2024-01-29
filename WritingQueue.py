@@ -1,18 +1,13 @@
-from random import Random
-
 import numpy as np
 
 from Queue import Queue
-from constants import seed
 
 
 class WritingQueue(Queue):
     def __init__(self, entry_mean, entry_variance):
-        super().__init__("WritingQueue", 1, "SPT")
+        super().__init__("WritingQueue", 1, "SPT", 30)
         self.entry_mean = entry_mean
         self.entry_variance = entry_variance
-        self.random_generator = Random()
-        self.random_generator.seed(seed)
 
     def generate_interarrival_time(self):
         random_number = self.random_generator.normalvariate(self.entry_mean, np.sqrt(self.entry_variance))
