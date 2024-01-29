@@ -2,9 +2,9 @@ from Queue import Queue
 
 
 class ComplaintsQueue(Queue):
-    def __init__(self, lambda_parameter):
+    def __init__(self):
         super().__init__("ComplaintsQueue", 60, "FIFO", 25)
-        self.lambda_parameter = lambda_parameter
+        self.lambda_parameter = 0.5
 
     def generate_interarrival_time(self):
         random_number = self.random_generator.expovariate(lambd=self.lambda_parameter)

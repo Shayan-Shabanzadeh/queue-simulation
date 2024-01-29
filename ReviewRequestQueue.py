@@ -3,15 +3,15 @@ from random import Random
 import numpy as np
 
 from Queue import Queue
-from constants import seed
 
 
 class ReviewRequestQueue(Queue):
-    def __init__(self, entry_mean, entry_variance):
+    def __init__(self):
         super().__init__("ReviewRequestQueue", 1, "SIRO", 10)
-        self.entry_mean = entry_mean
-        self.entry_variance = entry_variance
+        self.entry_mean = 15
+        self.entry_variance = 36
         self.random_task_fetcher = Random()
+        from constants import seed
         self.random_task_fetcher.seed(seed)
 
     def generate_interarrival_time(self):
@@ -32,4 +32,3 @@ class ReviewRequestQueue(Queue):
         task = self.tasks.pop(random_index)
 
         return task
-
