@@ -30,8 +30,11 @@ class Queue:
 
     def generate_tasks(self, simulation_time):
         task_times = []
+        task_arrival_time = 0
         while sum(task_times) < simulation_time:
             task = self.generate_task()
+            task_arrival_time += task.interarrival_time
+            task.arrival_time = task_arrival_time
             task_times.append(task.interarrival_time)
             self.tasks.append(task)
 
