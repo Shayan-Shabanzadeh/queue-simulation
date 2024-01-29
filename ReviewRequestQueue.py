@@ -29,6 +29,6 @@ class ReviewRequestQueue(Queue):
 
         # Fetch a task randomly from the queue (SIRO)
         random_index = self.random_task_fetcher.randint(0, len(self.tasks))
-        task = self.tasks.pop(random_index)
+        task = self.tasks[random_index]
 
         return task

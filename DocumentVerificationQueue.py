@@ -22,6 +22,7 @@ class DocumentVerificationQueue(Queue):
             return None  # No task in the queue
 
         # Fetch the task at the front of the queue (FIFO)
-        task = self.tasks.pop(0)
+        task = self.tasks[0]
 
         return task
+

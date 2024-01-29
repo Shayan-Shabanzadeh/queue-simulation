@@ -25,7 +25,4 @@ class WritingQueue(Queue):
         # Find the task with the shortest processing time
         shortest_task = min(self.tasks, key=lambda task: task.service_time)
 
-        # Remove the task from the queue
-        self.tasks.remove(shortest_task)
-
         return shortest_task
