@@ -29,7 +29,7 @@ class Server:
         end_time = self.start_time + self.simulation_time
 
         # Wait for the simulation_time to elapse
-        while time.time() - self.start_time < end_time:
+        while time.time() < end_time:
             time.sleep(1)  # Sleep for 1 second
 
         # Stop the server after the specified simulation_time
