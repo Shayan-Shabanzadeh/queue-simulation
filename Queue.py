@@ -5,13 +5,19 @@ from matplotlib import pyplot as plt
 from Task import Task
 
 
+"""
+Queue Class:
+The Parent Class for our queue types.
+"""
+
+
 class Queue:
     def __init__(self, name, output_unit, policy, service_mean):
-        self.name = name
-        self.output_unit = output_unit
-        self.policy = policy
-        self.tasks = []
-        self.service_mean = service_mean
+        self.name = name  # Queue type name [Writing, Complaint, Verification, Application, Review]
+        self.output_unit = output_unit  # Queue type Distribution output type sec/60sec
+        self.policy = policy  # Queue type policy --> [SPT, FIFO, SIRO]
+        self.tasks = []  # Tasks queue
+        self.service_mean = service_mean  # Service-time distribution (exponential) mean (1 / lambda parameter)
         self.random_generator = Random()
         from constants import seed
         self.random_generator.seed(seed)

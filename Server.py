@@ -55,5 +55,6 @@ class Server:
                 self.add_core(new_core)
 
     def generate_queues(self):
+        # call the queue types classes' constructors and append them to Server.queues
         for queue_type in QUEUE_TYPES:
             self.queues.append(queue_type())
