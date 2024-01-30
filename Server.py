@@ -16,12 +16,17 @@ class Server:
         self.start_time = None
 
     def start_server(self):
+        print("Started Server!")
         # Generate tasks for all queues
         for queue in self.queues:
+            print("Creating tasks for", queue.name)
             queue.generate_tasks(self.simulation_time)
+            queue.generate_plot_interarrival_tasks()
+            queue.generate_linechart_interarrival_times()
 
         # Start the processing threads for all cores
         for core in self.cores:
+            print("Start Core:", core.name, "ID:", core.id)
             core.start_processing_thread()
 
         # Set the start time for the simulation

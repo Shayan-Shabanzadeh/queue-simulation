@@ -1,6 +1,5 @@
 import logging
 import time
-import uuid
 from abc import ABC, abstractmethod
 from random import Random
 from threading import Thread, Lock
@@ -32,8 +31,12 @@ logging.getLogger('').addHandler(colored_console_handler)
 
 
 class Core(ABC):
+
+    _id_counter = 0
+
     def __init__(self, queues):
-        self.id = uuid.uuid1()
+        Core._id_counter += 1
+        self.id = Core._id_counter
         self.name = "Abstract core "
         self.switch_time_period = 0
         self.current_queue = None

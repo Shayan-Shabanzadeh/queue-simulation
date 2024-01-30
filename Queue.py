@@ -1,14 +1,8 @@
 from random import Random
-
+import matplotlib
 from matplotlib import pyplot as plt
-
 from Task import Task
-
-
-"""
-Queue Class:
-The Parent Class for our queue types.
-"""
+matplotlib.use('TkAgg')
 
 
 class Queue:
@@ -28,20 +22,18 @@ class Queue:
     def generate_service_time(self):
         return self.random_generator.expovariate(1 / self.service_mean)
 
-    def generate_task(self):
+    def generate_task(self, task_arrival_time):
         interarrival_time = self.generate_interarrival_time()
         service_time = self.generate_service_time()
-        task = Task(interarrival_time=interarrival_time, service_time=service_time)
+        task = Task(arrival_time=task_arrival_time, interarrival_time=interarrival_time, service_time=service_time)
         return task
 
     def generate_tasks(self, simulation_time):
-        task_times = []
         task_arrival_time = 0
-        while sum(task_times) < simulation_time:
-            task = self.generate_task()
+        while task_arrival_time < simulation_time:
+            task = self.generate_task(task_arrival_time)
             task_arrival_time += task.interarrival_time
             task.arrival_time = task_arrival_time
-            task_times.append(task.interarrival_time)
             self.tasks.append(task)
 
     def remove_task(self, task: Task):
@@ -57,8 +49,7 @@ class Queue:
         if plot is None:
             plot = plt
 
-        plot.figure(figsize=(12, 8))
-
+        plot.figure(figsize=(8, 6))
         interarrival_times = [task.interarrival_time for task in self.tasks]
 
         plot.hist(interarrival_times, bins=30, alpha=0.5, label=self.name)
@@ -67,6 +58,21 @@ class Queue:
         plot.ylabel("Frequency")
         plot.legend()
         plot.show()
+
+    def generate_linechart_interarrival_times(self):
+        arrival_times = [task.arrival_time for task in self.tasks]
+        interarrival_times = [task.interarrival_time for task in self.tasks]
+        print("Total Customers for " + self.name + ": " + str(len(interarrival_times)))
+
+        # Plotting a line chart
+        plt.figure(figsize=(12, 5))
+        plt.plot(arrival_times, interarrival_times, marker='o', linestyle='-', markersize=1)
+        plt.title('Interarrival Times in' + self.name)
+        plt.xlabel('Arrival Time')
+        plt.ylabel('Interarrival Time')
+
+        plt.grid(True)
+        plt.show()
 
 
 def fetch_task(self):
