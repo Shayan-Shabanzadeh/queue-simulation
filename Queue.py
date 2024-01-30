@@ -74,6 +74,21 @@ class Queue:
         plt.grid(True)
         plt.show()
 
+    def generate_linechart_service_times(self):
+        arrival_times = [task.arrival_time for task in self.tasks]
+        service_times = [task.service_time for task in self.tasks]
+        print("Total Customers for " + self.name + ": " + str(len(service_times)))
+
+        # Plotting a line chart
+        plt.figure(figsize=(12, 5))
+        plt.plot(arrival_times, service_times, marker='o', linestyle='-', markersize=1)
+        plt.title('Service times in' + self.name)
+        plt.xlabel('Arrival Time')
+        plt.ylabel('Service Time')
+
+        plt.grid(True)
+        plt.show()
+
 
 def fetch_task(self):
     raise NotImplementedError("Subclasses must implement this method.")

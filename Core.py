@@ -43,15 +43,16 @@ class Core(ABC):
         self.queues = queues
         self.current_task = None
         self.queue_locks = {queue: Lock() for queue in queues}  # Create a lock for each queue
+        self.processing_thread = None
         self.stop_thread = False  # Flag to signal the thread to stop
         self.random_generator = Random()
         from constants import seed
         self.random_generator.seed(seed)
 
     def start_processing_thread(self):
-        processing_thread = Thread(target=self._process_task)
-        processing_thread.start()
-        return processing_thread
+        self.processing_thread = Thread(target=self._process_task)
+        self.processing_thread.start()
+        return self.processing_thread
 
     def stop_processing_thread(self):
         self.stop_thread = True

@@ -21,8 +21,9 @@ class Server:
         for queue in self.queues:
             print("Creating tasks for", queue.name)
             queue.generate_tasks(self.simulation_time)
-            queue.generate_plot_interarrival_tasks()
-            queue.generate_linechart_interarrival_times()
+            # queue.generate_plot_interarrival_tasks()
+            # queue.generate_linechart_interarrival_times()
+            # queue.generate_linechart_service_times()
 
         # Start the processing threads for all cores
         for core in self.cores:
@@ -36,6 +37,7 @@ class Server:
         # Wait for the simulation_time to elapse
         while time.time() < end_time:
             time.sleep(1)  # Sleep for 1 second
+            # TODO remove this
 
         # Stop the server after the specified simulation_time
         self.stop_server()

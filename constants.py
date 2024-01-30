@@ -9,8 +9,5 @@ from ReviewRequestQueue import ReviewRequestQueue
 from WritingQueue import WritingQueue
 
 seed = 42
-# a = 1664525
-# c = 1013904223
-# m = 2 ** 32
 CORE_TYPES = [CoreA, CoreB, CoreC]
 QUEUE_TYPES = [WritingQueue, ComplaintsQueue, DocumentVerificationQueue, ApplicationSubmissionQueue, ReviewRequestQueue]
